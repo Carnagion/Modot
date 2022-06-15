@@ -1,0 +1,29 @@
+<Project Sdk="Godot.NET.Sdk/3.3.0">
+    <PropertyGroup>
+        <LangVersion>default</LangVersion>
+        <Nullable>enable</Nullable>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>Godot</RootNamespace>
+        <!-- Workaround as Godot does not know how to properly load NuGet packages -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\Debug\Modot.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ExportDebug' ">
+      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\ExportDebug\Modot.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ExportRelease' ">
+      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\ExportRelease\Modot.xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+        <PackageReference Include="GDSerializer" Version="1.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="GDLogger" Version="1.0.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include=".gitignore" />
+    </ItemGroup>
+</Project>
