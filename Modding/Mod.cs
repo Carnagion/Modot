@@ -55,12 +55,10 @@ namespace Godot.Modding
         
         private IEnumerable<Assembly> LoadAssemblies()
         {
-            string assembliesPath = $"{this.Meta.Directory}/Assemblies";
+            string assembliesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Assemblies";
             
-            using Directory directory = new();
-            return directory.DirExists(assembliesPath)
-                ? from assemblyPath in directory.GetFiles(assembliesPath, true)
-                  where assemblyPath.EndsWith(".dll")
+            return System.IO.Directory.Exists(assembliesPath)
+                ? from assemblyPath in System.IO.Directory.GetFiles(assembliesPath, "*.dll", SearchOption.AllDirectories)
                   select Assembly.LoadFile(assemblyPath)
                 : Enumerable.Empty<Assembly>();
         }
@@ -84,15 +82,14 @@ namespace Godot.Modding
         
         private IEnumerable<XmlDocument> LoadDocuments()
         {
-            string dataPath = $"{this.Meta.Directory}/Data";
+            string dataPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Data";
             
-            using Directory directory = new();
-            if (!directory.DirExists(dataPath))
+            if (!System.IO.Directory.Exists(dataPath))
             {
                 yield break;
             }
             
-            foreach (string xmlPath in directory.GetFiles(dataPath, true))
+            foreach (string xmlPath in System.IO.Directory.GetFiles(dataPath, "*.xml", SearchOption.AllDirectories))
             {
                 XmlDocument document = new();
                 document.Load(xmlPath);
@@ -102,17 +99,14 @@ namespace Godot.Modding
         
         private void LoadResources()
         {
-            string resourcesPath = $"{this.Meta.Directory}/Resources";
+            string resourcesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Resources";
             
-            using Directory directory = new();
-            if (!directory.DirExists(resourcesPath))
+            if (!System.IO.Directory.Exists(resourcesPath))
             {
                 return;
             }
             
-            foreach (string resourcePath in from path in directory.GetFiles(resourcesPath, true)
-                                            where path.EndsWith(".pck")
-                                            select path)
+            foreach (string resourcePath in System.IO.Directory.GetFiles(resourcesPath, "*.pck", SearchOption.AllDirectories))
             {
                 if (!ProjectSettings.LoadResourcePack(resourcePath))
                 {
@@ -225,10 +219,9 @@ namespace Godot.Modding
             {
                 try
                 {
-                    string metadataFilePath = $"{directoryPath}/Mod.xml";
+                    string metadataFilePath = $"{directoryPath}{System.IO.Path.DirectorySeparatorChar}Mod.xml";
                     
-                    using File file = new();
-                    if (!file.FileExists(metadataFilePath))
+                    if (!System.IO.File.Exists(metadataFilePath))
                     {
                         throw new ModLoadException(directoryPath, new FileNotFoundException($"Mod metadata file {metadataFilePath} does not exist"));
                     }
