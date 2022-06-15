@@ -4,8 +4,20 @@ using System.Linq;
 
 namespace Godot.Utility.Extensions
 {
+    /// <summary>
+    /// Contains extension methods for <see cref="IEnumerable{T}"/>.
+    /// </summary>
     public static class EnumerableExtensions
     {
+        /// <summary>
+        /// Topologically sorts the given sequence of elements.
+        /// </summary>
+        /// <param name="source">The <see cref="IEnumerable{T}"/> to sort.</param>
+        /// <param name="dependencies">A <see cref="Func{T,TResult}"/> that returns an <see cref="IEnumerable{T}"/> of dependencies for each element in <paramref name="source"/>.</param>
+        /// <param name="cyclic">An optional <see cref="Action{T}"/> that is invoked if a cyclic dependency is found while sorting.</param>
+        /// <typeparam name="T">The <see cref="Type"/> of elements in <paramref name="source"/>.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/> of elements from <paramref name="source"/> sorted topologically, or <see langword="null"/> if no valid topological sorting exists.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if either <paramref name="source"/> or <paramref name="dependencies"/> is <see langword="null"/>.</exception>
         public static IEnumerable<T>? TopologicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, Action<T>? cyclic = null)
         {
             if (source is null)
