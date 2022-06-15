@@ -1,10 +1,13 @@
 using System;
 
+using JetBrains.Annotations;
+
 namespace Godot.Modding
 {
     /// <summary>
     /// Indicates that the marked method is to be invoked after the loading of the <see cref="Mod"/> assemblies in which it is contained.
     /// </summary>
+    [PublicAPI]
     [AttributeUsage(AttributeTargets.Method)]
     public class ModStartupAttribute : Attribute
     {

@@ -4,11 +4,14 @@ using System.Reflection;
 
 using Godot.Modding.Utility.Extensions;
 
+using JetBrains.Annotations;
+
 namespace Godot.Modding
 {
     /// <summary>
     /// Provides methods and properties for loading <see cref="Mod"/>s at runtime, obtaining all loaded <see cref="Mod"/>s, and finding a loaded <see cref="Mod"/> by its ID.
     /// </summary>
+    [PublicAPI]
     public static class ModLoader
     {
         private static readonly Dictionary<string, Mod> loadedMods = new();

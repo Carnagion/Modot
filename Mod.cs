@@ -14,6 +14,7 @@ namespace Godot.Modding
     /// <summary>
     /// Represents a modular component loaded at runtime, with its own assemblies, resource packs, and data.
     /// </summary>
+    [PublicAPI]
     public sealed record Mod
     {
         /// <summary>
@@ -117,6 +118,7 @@ namespace Godot.Modding
         /// <summary>
         /// Represents the metadata of a <see cref="Mod"/>, such as its unique ID, name, author, load order, etc.
         /// </summary>
+        [PublicAPI]
         public sealed record Metadata
         {
             [UsedImplicitly]
