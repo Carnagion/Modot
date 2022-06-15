@@ -12,8 +12,15 @@ using JetBrains.Annotations;
 
 namespace Godot.Modding
 {
+    /// <summary>
+    /// Represents a modular component loaded at runtime, with its own assemblies, resource packs, and data.
+    /// </summary>
     public sealed record Mod
     {
+        /// <summary>
+        /// Initializes a new <see cref="Mod"/> using <paramref name="metadata"/>.
+        /// </summary>
+        /// <param name="metadata">The <see cref="Metadata"/> to use. Assemblies, resource packs, and data are all loaded according to the directory specified in the metadata.</param>
         public Mod(Metadata metadata)
         {
             this.Meta = metadata;
@@ -22,16 +29,25 @@ namespace Godot.Modding
             this.LoadResources();
         }
         
+        /// <summary>
+        /// The metadata of the <see cref="Mod"/>, such as its ID, name, load order, etc.
+        /// </summary>
         public Metadata Meta
         {
             get;
         }
         
+        /// <summary>
+        /// The assemblies of the <see cref="Mod"/>.
+        /// </summary>
         public IEnumerable<Assembly> Assemblies
         {
             get;
         }
         
+        /// <summary>
+        /// The XML data of the <see cref="Mod"/>, combined into a single <see cref="XmlNode"/> as its children.
+        /// </summary>
         public XmlNode? Data
         {
             get;
@@ -105,6 +121,9 @@ namespace Godot.Modding
             }
         }
         
+        /// <summary>
+        /// Represents the metadata of a <see cref="Mod"/>, such as its unique ID, name, author, load order, etc.
+        /// </summary>
         public sealed record Metadata
         {
             [UsedImplicitly]
@@ -112,6 +131,9 @@ namespace Godot.Modding
             {
             }
             
+            /// <summary>
+            /// The directory where the <see cref="Metadata"/> was loaded from.
+            /// </summary>
             [Serialize]
             public string Directory
             {
@@ -120,6 +142,9 @@ namespace Godot.Modding
                 private set;
             } = null!;
             
+            /// <summary>
+            /// The unique ID of the <see cref="Mod"/>.
+            /// </summary>
             [Serialize]
             public string Id
             {
@@ -128,6 +153,9 @@ namespace Godot.Modding
                 private set;
             } = null!;
             
+            /// <summary>
+            /// The name of the <see cref="Mod"/>.
+            /// </summary>
             [Serialize]
             public string Name
             {
@@ -136,6 +164,9 @@ namespace Godot.Modding
                 private set;
             } = null!;
             
+            /// <summary>
+            /// The individual or group that created the <see cref="Mod"/>.
+            /// </summary>
             [Serialize]
             public string Author
             {
@@ -144,6 +175,9 @@ namespace Godot.Modding
                 private set;
             } = null!;
             
+            /// <summary>
+            /// The unique IDs of all other <see cref="Mod"/>s that the <see cref="Mod"/> depends on.
+            /// </summary>
             public IEnumerable<string> Dependencies
             {
                 get;
@@ -151,6 +185,9 @@ namespace Godot.Modding
                 private set;
             } = Enumerable.Empty<string>();
             
+            /// <summary>
+            /// The unique IDs of all other <see cref="Mod"/>s that should be loaded before the <see cref="Mod"/>.
+            /// </summary>
             public IEnumerable<string> Before
             {
                 get;
@@ -158,6 +195,9 @@ namespace Godot.Modding
                 private set;
             } = Enumerable.Empty<string>();
             
+            /// <summary>
+            /// The unique IDs of all other <see cref="Mod"/>s that should be loaded after the <see cref="Mod"/>.
+            /// </summary>
             public IEnumerable<string> After
             {
                 get;
@@ -165,6 +205,9 @@ namespace Godot.Modding
                 private set;
             } = Enumerable.Empty<string>();
             
+            /// <summary>
+            /// The unique IDs of all other <see cref="Mod"/>s that are incompatible with the <see cref="Mod"/>.
+            /// </summary>
             public IEnumerable<string> Incompatible
             {
                 get;
@@ -172,6 +215,12 @@ namespace Godot.Modding
                 private set;
             } = Enumerable.Empty<string>();
             
+            /// <summary>
+            /// Loads a <see cref="Metadata"/> from <paramref name="directoryPath"/>.
+            /// </summary>
+            /// <param name="directoryPath">The directory path. It must contain a "Mod.xml" file inside it with valid metadata.</param>
+            /// <returns>A <see cref="Metadata"/> loaded from <paramref name="directoryPath"/>.</returns>
+            /// <exception cref="ModLoadException">Thrown if the metadata file does not exist, or the metadata is invalid, or if there is another unexpected issue while trying to load the metadata.</exception>
             public static Metadata Load(string directoryPath)
             {
                 try

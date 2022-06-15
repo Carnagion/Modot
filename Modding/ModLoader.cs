@@ -6,10 +6,16 @@ using Godot.Utility.Extensions;
 
 namespace Godot.Modding
 {
+    /// <summary>
+    /// Provides methods and properties for loading <see cref="Mod"/>s at runtime, obtaining all loaded <see cref="Mod"/>s, and finding a loaded <see cref="Mod"/> by its ID.
+    /// </summary>
     public static class ModLoader
     {
         private static readonly Dictionary<string, Mod> loadedMods = new();
         
+        /// <summary>
+        /// All the <see cref="Mod"/>s that have been loaded at runtime.
+        /// </summary>
         public static IReadOnlyDictionary<string, Mod> LoadedMods
         {
             get
@@ -18,6 +24,12 @@ namespace Godot.Modding
             }
         }
         
+        /// <summary>
+        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies (if any).
+        /// </summary>
+        /// <param name="modDirectoryPath">The directory path containing the <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
+        /// <returns>The <see cref="Mod"/> loaded from <paramref name="modDirectoryPath"/>.</returns>
+        /// <remarks>This method only loads a <see cref="Mod"/> individually, and does not check whether it has been loaded with all dependencies and in the correct load order. To load multiple <see cref="Mod"/>s in a safe and orderly manner, <see cref="LoadMods"/> should be used.</remarks>
         public static Mod LoadMod(string modDirectoryPath)
         {
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
@@ -26,6 +38,12 @@ namespace Godot.Modding
             return mod;
         }
         
+        /// <summary>
+        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies (if any).
+        /// </summary>
+        /// <param name="modDirectoryPaths">The directory paths to load the <see cref="Mod"/>s from, containing each <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of the loaded <see cref="Mod"/>s in the correct load order. <see cref="Mod"/>s that could not be loaded due to issues will not be contained in the sequence.</returns>
+        /// <remarks>This method loads multiple <see cref="Mod"/>s after sorting them according to the load order specified in their metadata. To load a <see cref="Mod"/> individually without regard to its dependencies and load order, <see cref="LoadMod"/> should be used.</remarks>
         public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths)
         {
             List<Mod> mods = (from metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths)))
