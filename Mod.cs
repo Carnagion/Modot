@@ -216,15 +216,15 @@ namespace Godot.Modding
             /// <exception cref="ModLoadException">Thrown if the metadata file does not exist, or the metadata is invalid, or if there is another unexpected issue while trying to load the metadata.</exception>
             public static Metadata Load(string directoryPath)
             {
+                string metadataFilePath = $"{directoryPath}{System.IO.Path.DirectorySeparatorChar}Mod.xml";
+                
+                if (!System.IO.File.Exists(metadataFilePath))
+                {
+                    throw new ModLoadException(directoryPath, new FileNotFoundException($"Mod metadata file {metadataFilePath} does not exist"));
+                }
+                
                 try
                 {
-                    string metadataFilePath = $"{directoryPath}{System.IO.Path.DirectorySeparatorChar}Mod.xml";
-                    
-                    if (!System.IO.File.Exists(metadataFilePath))
-                    {
-                        throw new ModLoadException(directoryPath, new FileNotFoundException($"Mod metadata file {metadataFilePath} does not exist"));
-                    }
-                    
                     XmlDocument document = new();
                     document.Load(metadataFilePath);
                     if (document.DocumentElement?.Name is not "Mod")
