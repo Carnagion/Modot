@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Godot.Utility.Extensions
+namespace Godot.Modding.Utility.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="IEnumerable{T}"/>.
