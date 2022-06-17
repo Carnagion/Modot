@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using Godot.Modding.Utility.Extensions;
-
 using JetBrains.Annotations;
+
+using Godot.Modding.Utility.Extensions;
 
 namespace Godot.Modding
 {

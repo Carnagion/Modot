@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 
-using Godot.Serialization;
-
 using JetBrains.Annotations;
+
+using Godot.Serialization;
 
 namespace Godot.Modding
 {
