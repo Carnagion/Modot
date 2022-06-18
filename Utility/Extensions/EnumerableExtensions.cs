@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 namespace Godot.Modding.Utility.Extensions
 {
     /// <summary>
@@ -18,6 +20,7 @@ namespace Godot.Modding.Utility.Extensions
         /// <typeparam name="T">The <see cref="Type"/> of elements in <paramref name="source"/>.</typeparam>
         /// <returns>An <see cref="IEnumerable{T}"/> of elements from <paramref name="source"/> sorted topologically, or <see langword="null"/> if no valid topological sorting exists.</returns>
         /// <exception cref="ArgumentNullException">Thrown if either <paramref name="source"/> or <paramref name="dependencies"/> is <see langword="null"/>.</exception>
+        [MustUseReturnValue]
         public static IEnumerable<T>? TopologicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, Action<T>? cyclic = null)
         {
             if (source is null)
