@@ -28,31 +28,39 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies (if any).
+        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPath">The directory path containing the <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
+        /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/> gets executed.</param>
         /// <returns>The <see cref="Mod"/> loaded from <paramref name="modDirectoryPath"/>.</returns>
         /// <remarks>This method only loads a <see cref="Mod"/> individually, and does not check whether it has been loaded with all dependencies and in the correct load order. To load multiple <see cref="Mod"/>s in a safe and orderly manner, <see cref="LoadMods"/> should be used.</remarks>
-        public static Mod LoadMod(string modDirectoryPath)
+        public static Mod LoadMod(string modDirectoryPath, bool executeAssemblies = true)
         {
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
             ModLoader.loadedMods.Add(mod.Meta.Id, mod);
-            ModLoader.StartupMods(mod.Yield());
+            if (executeAssemblies)
+            {
+                ModLoader.StartupMods(mod.Yield());
+            }
             return mod;
         }
         
         /// <summary>
-        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies (if any).
+        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPaths">The directory paths to load the <see cref="Mod"/>s from, containing each <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
+        /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/>s gets executed.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of the loaded <see cref="Mod"/>s in the correct load order. <see cref="Mod"/>s that could not be loaded due to issues will not be contained in the sequence.</returns>
         /// <remarks>This method loads multiple <see cref="Mod"/>s after sorting them according to the load order specified in their metadata. To load a <see cref="Mod"/> individually without regard to its dependencies and load order, <see cref="LoadMod"/> should be used.</remarks>
-        public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths)
+        public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths, bool executeAssemblies = true)
         {
             List<Mod> mods = (from metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths)))
                               select new Mod(metadata)).ToList();
             mods.ForEach(mod => ModLoader.loadedMods.Add(mod.Meta.Id, mod));
-            ModLoader.StartupMods(mods);
+            if (executeAssemblies)
+            {
+                ModLoader.StartupMods(mods);
+            }
             return mods;
         }
         
