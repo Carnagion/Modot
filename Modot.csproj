@@ -12,6 +12,7 @@
         <Authors>Carnagion</Authors>
         <Description>A mod loader and API for applications made using Godot, with the ability to load C# assemblies, XML data, and resource packs at runtime.</Description>
         <RepositoryUrl>https://github.com/Carnagion/Modot</RepositoryUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\Debug\Modot.xml</DocumentationFile>
@@ -31,6 +32,10 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include=".gitignore" />
+        <Content Include="LICENSE" />
         <Content Include="README.md" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="LICENSE" Pack="true" PackagePath=""/>
     </ItemGroup>
 </Project>
