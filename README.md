@@ -2,11 +2,14 @@
 
 **Modot** is a mod loader for applications made using Godot, inspired heavily by [RimWorld](https://rimworldgame.com)'s mod loading process.
 
+Its API is aimed at allowing creators to easily modularise their Godot applications, create and deploy patches and DLCs, and let users expand the functionality of their applications.
+
 # Features
 
 - Load mods with C# assemblies, XML data, and resource packs at runtime
 - Sort mods using load orders defined partially by each mod to prevent conflicts
 - Optionally execute code from mod assemblies upon loading
+- Load mods individually, bypassing load order restrictions
 
 A more detailed explanation of all features along with instructions on usage is available on the [wiki](https://github.com/Carnagion/Modot/wiki).
 
