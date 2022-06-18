@@ -6,6 +6,12 @@
         <RootNamespace>Godot.Modding</RootNamespace>
         <!-- Workaround as Godot does not know how to properly load NuGet packages -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Title>Modot</Title>
+        <Authors>Carnagion</Authors>
+        <Description>A mod loader and API for applications made using Godot, with the ability to load C# assemblies, XML data, and resource packs at runtime.</Description>
+        <RepositoryUrl>https://github.com/Carnagion/Modot</RepositoryUrl>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\Debug\Modot.xml</DocumentationFile>
