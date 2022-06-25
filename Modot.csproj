@@ -4,6 +4,7 @@
         <Nullable>enable</Nullable>
         <TargetFramework>netstandard2.1</TargetFramework>
         <RootNamespace>Godot.Modding</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Workaround as Godot does not know how to properly load NuGet packages -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,15 +14,6 @@
         <Description>A mod loader and API for applications made using Godot, with the ability to load C# assemblies, XML data, and resource packs at runtime.</Description>
         <RepositoryUrl>https://github.com/Carnagion/Modot</RepositoryUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\Debug\Modot.xml</DocumentationFile>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'ExportDebug' ">
-      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\ExportDebug\Modot.xml</DocumentationFile>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'ExportRelease' ">
-      <DocumentationFile>C:\Users\Indraneel\Projects\Modot\.mono\temp\bin\ExportRelease\Modot.xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="GDLogger" Version="1.0.0" />

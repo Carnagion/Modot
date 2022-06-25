@@ -238,8 +238,7 @@ namespace Godot.Modding
                     directoryNode.InnerText = directoryPath;
                     document.DocumentElement.AppendChild(directoryNode);
                     
-                    Metadata metadata = new Serializer().Deserialize<Metadata>(document.DocumentElement)!;
-                    return metadata.IsValid() ? metadata : throw new ModLoadException(directoryPath, "Invalid metadata");
+                    return new Serializer().Deserialize<Metadata>(document.DocumentElement)!;
                 }
                 catch (Exception exception) when (exception is not ModLoadException)
                 {
@@ -247,7 +246,8 @@ namespace Godot.Modding
                 }
             }
             
-            private bool IsValid()
+            [AfterDeserialization]
+            private void IsValid()
             {
                 // Check that the incompatible, load before, and load after lists don't have anything in common or contain the mod's own ID
                 bool invalidLoadOrder = this.Id.Yield()
@@ -260,7 +260,10 @@ namespace Godot.Modding
                 bool invalidDependencies = this.Dependencies
                     .Intersect(this.Incompatible)
                     .Any();
-                return !(invalidLoadOrder || invalidDependencies);
+                if (invalidLoadOrder || invalidDependencies)
+                {
+                    throw new ModLoadException(this.Directory, "Invalid metadata");
+                }
             }
         }
     }
