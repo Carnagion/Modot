@@ -40,7 +40,7 @@ namespace Godot.Modding
             ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             if (executeAssemblies)
             {
-                ModLoader.StartupMods(mod.Yield());
+                ModLoader.StartupMod(mod);
             }
             return mod;
         }
@@ -59,24 +59,20 @@ namespace Godot.Modding
             mods.ForEach(mod => ModLoader.loadedMods.Add(mod.Meta.Id, mod));
             if (executeAssemblies)
             {
-                ModLoader.StartupMods(mods);
+                mods.ForEach(ModLoader.StartupMod);
             }
             return mods;
         }
-        
-        private static void StartupMods(IEnumerable<Mod> mods)
+
+        private static void StartupMod(Mod mod)
         {
             // Invoke all static methods annotated with [Startup] along with the supplied parameters (if any)
-            foreach ((MethodInfo method, ModStartupAttribute attribute) in from mod in mods 
-                                                                           from assembly in mod.Assemblies
-                                                                           from type in assembly.GetTypes() 
-                                                                           from method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public) 
-                                                                           let attribute = method.GetCustomAttribute<ModStartupAttribute>() 
-                                                                           where attribute is not null 
-                                                                           select (method, attribute))
-            {
-                method.Invoke(null, attribute.Parameters);
-            }
+            (from assembly in mod.Assemblies
+             from type in assembly.GetTypes()
+             from method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public)
+             let attribute = method.GetCustomAttribute<ModStartupAttribute>()
+             where attribute is not null
+             select (method, attribute)).ForEach(pair => pair.method.Invoke(null, pair.attribute.Parameters));
         }
         
         [MustUseReturnValue]

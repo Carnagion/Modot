@@ -19,7 +19,7 @@ A more detailed explanation of all features along with instructions on usage is 
 Simply include the following lines in a Godot project's `.csproj` file (either by editing the file manually or letting an IDE install the package):
 ```xml
 <ItemGroup>
-    <PackageReference Include="Modot" Version="1.0.0"/>
+    <PackageReference Include="Modot" Version="1.0.1"/>
 </ItemGroup>
  ```
 
