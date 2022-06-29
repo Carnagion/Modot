@@ -16,16 +16,16 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="GDLogger" Version="1.0.0" />
-        <PackageReference Include="GDSerializer" Version="1.1.0" />
-        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+        <PackageReference Include="GDLogger" Version="1.0.1"/>
+        <PackageReference Include="GDSerializer" Version="1.1.0"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include=".gitignore" />
-        <Content Include="LICENSE" />
-        <Content Include="README.md" />
+        <Content Include=".gitignore"/>
+        <Content Include="LICENSE"/>
+        <Content Include="README.md"/>
     </ItemGroup>
     <ItemGroup>
-        <None Include="LICENSE" Pack="true" PackagePath="" />
+        <None Include="LICENSE" Pack="true" PackagePath=""/>
     </ItemGroup>
 </Project>
