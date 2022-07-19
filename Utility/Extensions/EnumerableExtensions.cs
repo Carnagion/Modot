@@ -49,7 +49,8 @@ namespace Godot.Modding.Utility.Extensions
                         return true;
                     case false:
                         states[t] = null;
-                        bool dependenciesValid = dependencies.Invoke(t)
+                        bool dependenciesValid = dependencies
+                            .Invoke(t)
                             .Select(VisitDependencies)
                             .All(boolean => boolean);
                         if (!dependenciesValid)

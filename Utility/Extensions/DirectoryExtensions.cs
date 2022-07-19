@@ -68,7 +68,8 @@ namespace Godot.Modding.Utility.Extensions
         public static string[] GetFiles(this Directory directory, bool recursive = false)
         {
             return recursive
-                ? directory.GetDirectories(true)
+                ? directory
+                    .GetDirectories(true)
                     .SelectMany(path =>
                     {
                         using Directory recursiveDirectory = new();
@@ -77,7 +78,8 @@ namespace Godot.Modding.Utility.Extensions
                     })
                     .Concat(directory.GetElementsNonRecursive(true))
                     .ToArray()
-                : directory.GetElementsNonRecursive(true)
+                : directory
+                    .GetElementsNonRecursive(true)
                     .ToArray();
         }
         
@@ -106,15 +108,19 @@ namespace Godot.Modding.Utility.Extensions
         public static string[] GetDirectories(this Directory directory, bool recursive = false)
         {
             return recursive
-                ? directory.GetElementsNonRecursive(false)
+                ? directory
+                    .GetElementsNonRecursive(false)
                     .SelectMany(path =>
                     {
                         using Directory recursiveDirectory = new();
                         recursiveDirectory.Open(path);
-                        return recursiveDirectory.GetDirectories(true).Prepend(path);
+                        return recursiveDirectory
+                            .GetDirectories(true)
+                            .Prepend(path);
                     })
                     .ToArray()
-                : directory.GetElementsNonRecursive(false)
+                : directory
+                    .GetElementsNonRecursive(false)
                     .ToArray();
         }
         

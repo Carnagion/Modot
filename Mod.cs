@@ -58,8 +58,7 @@ namespace Godot.Modding
             string assembliesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Assemblies";
             
             return System.IO.Directory.Exists(assembliesPath)
-                ? from assemblyPath in System.IO.Directory.GetFiles(assembliesPath, "*.dll", SearchOption.AllDirectories)
-                  select Assembly.LoadFile(assemblyPath)
+                ? System.IO.Directory.GetFiles(assembliesPath, "*dll", SearchOption.AllDirectories).Select(Assembly.Load)
                 : Enumerable.Empty<Assembly>();
         }
         
@@ -73,10 +72,10 @@ namespace Godot.Modding
             
             XmlDocument data = new();
             data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), data.DocumentElement);
-            (from document in documents
-             from node in document.Cast<XmlNode>()
-             where node.NodeType is not XmlNodeType.XmlDeclaration
-             select node).ForEach(node => data.AppendChild(node));
+            documents
+                .SelectMany(document => document.Cast<XmlNode>())
+                .Where(node => node.NodeType is not XmlNodeType.XmlDeclaration)
+                .ForEach(node => data.AppendChild(node));
             return data;
         }
         
@@ -250,8 +249,8 @@ namespace Godot.Modding
             private void IsValid()
             {
                 // Check that the incompatible, load before, and load after lists don't have anything in common or contain the mod's own ID
-                bool invalidLoadOrder = this.Id.Yield()
-                    .Concat(this.Incompatible)
+                bool invalidLoadOrder = this.Incompatible
+                    .Prepend(this.Id)
                     .Concat(this.Before)
                     .Concat(this.After)
                     .Indistinct()
