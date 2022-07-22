@@ -58,7 +58,7 @@ namespace Godot.Modding
             string assembliesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Assemblies";
             
             return System.IO.Directory.Exists(assembliesPath)
-                ? System.IO.Directory.GetFiles(assembliesPath, "*dll", SearchOption.AllDirectories).Select(Assembly.Load)
+                ? System.IO.Directory.GetFiles(assembliesPath, "*dll", SearchOption.AllDirectories).Select(Assembly.LoadFile)
                 : Enumerable.Empty<Assembly>();
         }
         
