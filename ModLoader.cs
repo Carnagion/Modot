@@ -76,7 +76,6 @@ namespace Godot.Modding
                 .ForEach(pair => pair.Item1.Invoke(null, pair.Item2.Parameters));
         }
         
-        [MustUseReturnValue]
         private static Dictionary<string, Mod.Metadata> LoadModMetadata(IEnumerable<string> modDirectories)
         {
             Dictionary<string, Mod.Metadata> loadedMetadata = new();
@@ -101,7 +100,6 @@ namespace Godot.Modding
             return loadedMetadata;
         }
         
-        [MustUseReturnValue]
         private static Dictionary<string, Mod.Metadata> FilterModMetadata(Dictionary<string, Mod.Metadata> loadedMetadata)
         {
             // If the dependencies of any metadata have not been loaded, remove that metadata and try again
@@ -118,7 +116,6 @@ namespace Godot.Modding
             return loadedMetadata;
         }
         
-        [MustUseReturnValue]
         private static IEnumerable<Mod.Metadata> SortModMetadata(Dictionary<string, Mod.Metadata> filteredMetadata)
         {
             // Create a graph of each metadata ID and the IDs of those that need to be loaded after it
