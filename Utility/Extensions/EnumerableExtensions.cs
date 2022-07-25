@@ -4,7 +4,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-namespace Godot.Modding.Utility.Extensions
+namespace Godot.Utility.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="IEnumerable{T}"/>.

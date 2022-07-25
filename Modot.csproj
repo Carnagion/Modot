@@ -3,7 +3,7 @@
         <LangVersion>default</LangVersion>
         <Nullable>enable</Nullable>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <RootNamespace>Godot.Modding</RootNamespace>
+        <RootNamespace>Godot</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Workaround as Godot does not know how to properly load NuGet packages -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

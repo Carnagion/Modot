@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
 
-namespace Godot.Modding.Utility.Extensions
+namespace Godot.Utility.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="Directory"/>.
@@ -23,31 +23,31 @@ namespace Godot.Modding.Utility.Extensions
         public static void CopyContents(this Directory directory, string from, string to, bool recursive = false)
         {
             directory.Open(from);
-            
+
             // Create destination directory if it doesn't already exist
             directory.MakeDirRecursive(to);
-            
+
             // Regex is used to replace only the first instance of the destination directory in file and subdirectory paths (string.Replace() replaces all instances)
             Regex fromReplacement = new(Regex.Escape(from));
-            
+
             // Copy all files inside the source directory non-recursively
             foreach (string fromFile in directory.GetFiles())
             {
                 string toFile = fromReplacement.Replace(fromFile, to, 1);
                 directory.Copy(fromFile, toFile);
             }
-            
+
             if (!recursive)
             {
                 return;
             }
-            
+
             // Copy all files recursively
             foreach (string fromSubDirectory in directory.GetDirectories(true))
             {
                 string toSubDirectory = fromReplacement.Replace(fromSubDirectory, to, 1);
                 directory.MakeDirRecursive(toSubDirectory);
-                
+
                 using Directory innerDirectory = new();
                 innerDirectory.Open(fromSubDirectory);
                 foreach (string fromFile in innerDirectory.GetFiles())
@@ -57,7 +57,7 @@ namespace Godot.Modding.Utility.Extensions
                 }
             }
         }
-        
+
         /// <summary>
         /// Returns the complete file paths of all files inside <paramref name="directory"/>.
         /// </summary>
@@ -82,7 +82,7 @@ namespace Godot.Modding.Utility.Extensions
                     .GetElementsNonRecursive(true)
                     .ToArray();
         }
-        
+
         /// <summary>
         /// Returns the complete file paths of all files inside <paramref name="directory"/> whose extensions match any of <paramref name="fileExtensions"/>.
         /// </summary>
@@ -123,7 +123,7 @@ namespace Godot.Modding.Utility.Extensions
                     .GetElementsNonRecursive(false)
                     .ToArray();
         }
-        
+
         [MustUseReturnValue]
         private static IEnumerable<string> GetElementsNonRecursive(this Directory directory, bool trueIfFiles)
         {
