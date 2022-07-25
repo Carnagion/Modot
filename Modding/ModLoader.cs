@@ -15,7 +15,7 @@ namespace Godot.Modding
     public static class ModLoader
     {
         private static readonly Dictionary<string, Mod> loadedMods = new();
-
+        
         /// <summary>
         /// All the <see cref="Mod"/>s that have been loaded at runtime.
         /// </summary>
@@ -26,7 +26,7 @@ namespace Godot.Modding
                 return ModLoader.loadedMods;
             }
         }
-
+        
         /// <summary>
         /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
         /// </summary>
@@ -44,7 +44,7 @@ namespace Godot.Modding
             }
             return mod;
         }
-
+        
         /// <summary>
         /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
         /// </summary>
@@ -64,7 +64,7 @@ namespace Godot.Modding
             }
             return mods;
         }
-
+        
         private static void StartupMod(Mod mod)
         {
             // Invoke all static methods annotated with [Startup] along with the supplied parameters (if any)
@@ -75,14 +75,14 @@ namespace Godot.Modding
                 .Where(pair => pair.Item2 is not null)
                 .ForEach(pair => pair.Item1.Invoke(null, pair.Item2.Parameters));
         }
-
+        
         private static Dictionary<string, Mod.Metadata> LoadModMetadata(IEnumerable<string> modDirectories)
         {
             Dictionary<string, Mod.Metadata> loadedMetadata = new();
             foreach (string modDirectory in modDirectories)
             {
                 Mod.Metadata metadata = Mod.Metadata.Load(modDirectory);
-
+                
                 // Fail if the metadata is incompatible with any of the loaded metadata (and vice-versa), or if the ID already exists
                 IEnumerable<Mod.Metadata> incompatibleMetadata = metadata.Incompatible
                     .Select(id => loadedMetadata.GetValueOrDefault(id))
@@ -99,7 +99,7 @@ namespace Godot.Modding
             }
             return loadedMetadata;
         }
-
+        
         private static Dictionary<string, Mod.Metadata> FilterModMetadata(Dictionary<string, Mod.Metadata> loadedMetadata)
         {
             // If the dependencies of any metadata have not been loaded, remove that metadata and try again
@@ -115,7 +115,7 @@ namespace Godot.Modding
             }
             return loadedMetadata;
         }
-
+        
         private static IEnumerable<Mod.Metadata> SortModMetadata(Dictionary<string, Mod.Metadata> filteredMetadata)
         {
             // Create a graph of each metadata ID and the IDs of those that need to be loaded after it
@@ -130,14 +130,14 @@ namespace Godot.Modding
                     dependencyGraph[before].Add(metadata.Id);
                 }
             }
-
+            
             // Topologically sort the dependency graph, removing cyclic dependencies if any
             IEnumerable<string>? sortedMetadataIds = dependencyGraph.Keys.TopologicalSort(id => dependencyGraph.GetValueOrDefault(id) ?? Enumerable.Empty<string>(), cyclic =>
             {
                 Log.Error(new ModLoadException(filteredMetadata[cyclic].Directory, "Cyclic dependencies with other mod(s)"));
                 filteredMetadata.Remove(cyclic);
             });
-
+            
             // If there is no valid topological sorting (cyclic dependencies detected), remove the cyclic metadata and try again
             return sortedMetadataIds?
                 .Select(filteredMetadata.GetValueOrDefault)
