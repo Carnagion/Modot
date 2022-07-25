@@ -7,6 +7,7 @@ namespace Godot.Utility.Extensions
     /// <summary>
     /// Contains extension methods for <see cref="Error"/>.
     /// </summary>
+    [PublicAPI]
     public static class ErrorExtensions
     {
         /// <summary>
