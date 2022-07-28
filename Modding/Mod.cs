@@ -75,7 +75,7 @@ namespace Godot.Modding
             documents
                 .SelectMany(document => document.Cast<XmlNode>())
                 .Where(node => node.NodeType is not XmlNodeType.XmlDeclaration)
-                .ForEach(node => data.AppendChild(node));
+                .ForEach(node => data.AppendChild(data.ImportNode(node, true)));
             return data;
         }
         
@@ -88,9 +88,9 @@ namespace Godot.Modding
                 yield break;
             }
             
+            XmlDocument document = new();
             foreach (string xmlPath in System.IO.Directory.GetFiles(dataPath, "*.xml", SearchOption.AllDirectories))
             {
-                XmlDocument document = new();
                 document.Load(xmlPath);
                 yield return document;
             }
@@ -105,12 +105,10 @@ namespace Godot.Modding
                 return;
             }
             
-            foreach (string resourcePath in System.IO.Directory.GetFiles(resourcesPath, "*.pck", SearchOption.AllDirectories))
+            string? invalidResourcePath = System.IO.Directory.GetFiles(resourcesPath, "*.pck", SearchOption.AllDirectories).FirstOrDefault(resourcePath => !ProjectSettings.LoadResourcePack(resourcePath));
+            if (invalidResourcePath is not null)
             {
-                if (!ProjectSettings.LoadResourcePack(resourcePath))
-                {
-                    throw new ModLoadException(this.Meta.Directory, $"Error loading resource pack at {resourcePath}");
-                }
+                throw new ModLoadException(this.Meta.Directory, $"Error loading resource pack at {invalidResourcePath}");
             }
         }
         
