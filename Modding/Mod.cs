@@ -75,7 +75,7 @@ namespace Godot.Modding
             data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), data.DocumentElement);
             documents
                 .SelectMany(document => document.Cast<XmlNode>())
-                .Where(node => node.NodeType is not XmlNodeType.XmlDeclaration)
+                .Where(node => node is not XmlDeclaration)
                 .ForEach(node => root.AppendChild(data.ImportNode(node, true)));
             return data;
         }
