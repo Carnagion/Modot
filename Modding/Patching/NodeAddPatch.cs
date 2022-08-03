@@ -14,9 +14,11 @@ namespace Godot.Modding.Patching
         /// Initialises a new <see cref="NodeAddPatch"/> with the specified parameters.
         /// </summary>
         /// <param name="value">The <see cref="XmlNode"/> to add as a child.</param>
-        public NodeAddPatch(XmlNode value)
+        /// <param name="index">The index to insert <paramref name="value"/> at, or -1 if it should simply be appended to the end.</param>
+        public NodeAddPatch(XmlNode value, int index = -1)
         {
             this.Value = value;
+            this.Index = index;
         }
         
         /// <summary>
@@ -28,12 +30,32 @@ namespace Godot.Modding.Patching
         }
         
         /// <summary>
-        /// Adds <see cref="Value"/> as a child to <paramref name="data"/>.
+        /// The index to insert <see cref="Value"/> at.
+        /// </summary>
+        public int Index
+        {
+            get;
+        }
+        
+        /// <summary>
+        /// Adds <see cref="Value"/> as a child to <paramref name="data"/> at the index specified by <see cref="Index"/>.
         /// </summary>
         /// <param name="data">The <see cref="XmlNode"/> to apply the patch on.</param>
         public void Apply(XmlNode data)
         {
-            data.AppendChild(data.OwnerDocument!.ImportNode(this.Value, true));
+            XmlNode value = data.OwnerDocument!.ImportNode(data, true);
+            switch (this.Index)
+            {
+                case -1:
+                    data.AppendChild(value);
+                    break;
+                case 0:
+                    data.PrependChild(value);
+                    break;
+                default:
+                    data.InsertBefore(value, data.ChildNodes[this.Index]);
+                    break;
+            }
         }
     }
 }
