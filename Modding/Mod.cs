@@ -7,6 +7,7 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Modding.Patching;
 using Godot.Serialization;
 
 namespace Godot.Modding
@@ -24,9 +25,10 @@ namespace Godot.Modding
         public Mod(Metadata metadata)
         {
             this.Meta = metadata;
-            this.Assemblies = this.LoadAssemblies();
-            this.Data = this.LoadData();
             this.LoadResources();
+            this.Data = this.LoadData();
+            this.Patches = this.LoadPatches();
+            this.Assemblies = this.LoadAssemblies();
         }
         
         /// <summary>
@@ -49,6 +51,14 @@ namespace Godot.Modding
         /// The XML data of the <see cref="Mod"/>, combined into a single <see cref="XmlNode"/> as its children.
         /// </summary>
         public XmlDocument? Data
+        {
+            get;
+        }
+        
+        /// <summary>
+        /// The patches applied by the <see cref="Mod"/>.
+        /// </summary>
+        public IEnumerable<IPatch> Patches
         {
             get;
         }
@@ -110,6 +120,28 @@ namespace Godot.Modding
             if (invalidResourcePath is not null)
             {
                 throw new ModLoadException(this.Meta.Directory, $"Error loading resource pack at {invalidResourcePath}");
+            }
+        }
+        
+        private IEnumerable<IPatch> LoadPatches()
+        {
+            string patchesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Data";
+            
+            if (!System.IO.Directory.Exists(patchesPath))
+            {
+                yield break;
+            }
+            
+            Serializer serializer = new();
+            XmlDocument document = new();
+            foreach (string patchPath in System.IO.Directory.GetFiles(patchesPath, "*.xml", SearchOption.AllDirectories))
+            {
+                document.Load(patchPath);
+                if (document.DocumentElement is null)
+                {
+                    throw new ModLoadException(this.Meta.Directory, $"No patch present at {patchPath}");
+                }
+                yield return serializer.Deserialize(document.DocumentElement) as IPatch ?? throw new ModLoadException(this.Meta.Directory, $"Invalid patch at {patchPath}");
             }
         }
         
