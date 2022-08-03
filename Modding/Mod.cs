@@ -48,7 +48,7 @@ namespace Godot.Modding
         /// <summary>
         /// The XML data of the <see cref="Mod"/>, combined into a single <see cref="XmlNode"/> as its children.
         /// </summary>
-        public XmlNode? Data
+        public XmlDocument? Data
         {
             get;
         }
@@ -62,7 +62,7 @@ namespace Godot.Modding
                 : Enumerable.Empty<Assembly>();
         }
         
-        private XmlNode? LoadData()
+        private XmlDocument? LoadData()
         {
             IEnumerable<XmlDocument> documents = this.LoadDocuments().ToArray();
             if (!documents.Any())
@@ -71,11 +71,12 @@ namespace Godot.Modding
             }
             
             XmlDocument data = new();
+            XmlElement root = data.CreateElement(this.Meta.Id.XMLEscape().Replace(' ', '_'));
             data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), data.DocumentElement);
             documents
                 .SelectMany(document => document.Cast<XmlNode>())
                 .Where(node => node.NodeType is not XmlNodeType.XmlDeclaration)
-                .ForEach(node => data.AppendChild(data.ImportNode(node, true)));
+                .ForEach(node => root.AppendChild(data.ImportNode(node, true)));
             return data;
         }
         
