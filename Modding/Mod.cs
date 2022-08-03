@@ -88,9 +88,9 @@ namespace Godot.Modding
                 yield break;
             }
             
-            XmlDocument document = new();
             foreach (string xmlPath in System.IO.Directory.GetFiles(dataPath, "*.xml", SearchOption.AllDirectories))
             {
+                XmlDocument document = new();
                 document.Load(xmlPath);
                 yield return document;
             }
