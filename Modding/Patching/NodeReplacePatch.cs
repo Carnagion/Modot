@@ -2,6 +2,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching
 {
     /// <summary>
@@ -19,13 +21,21 @@ namespace Godot.Modding.Patching
             this.Replacement = replacement;
         }
         
+        [UsedImplicitly]
+        private NodeReplacePatch()
+        {
+        }
+        
         /// <summary>
         /// The <see cref="XmlNode"/> to add in place of the removed <see cref="XmlNode"/>.
         /// </summary>
+        [Serialize]
         public XmlNode Replacement
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// Removes <paramref name="data"/> and replaces it with <see cref="Replacement"/>.

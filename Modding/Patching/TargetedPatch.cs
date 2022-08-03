@@ -3,6 +3,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching
 {
     /// <summary>
@@ -22,21 +24,32 @@ namespace Godot.Modding.Patching
             this.Patch = patch;
         }
         
+        [UsedImplicitly]
+        private TargetedPatch()
+        {
+        }
+        
         /// <summary>
         /// The targets to apply the <see cref="TargetedPatch"/> on, in the form of an XPath.
         /// </summary>
+        [Serialize]
         public string Targets
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// The patch to apply on <see cref="XmlNode"/>s that match <see cref="Targets"/>.
         /// </summary>
+        [Serialize]
         public IPatch Patch
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// Applies <see cref="Patch"/> to all <see cref="XmlNode"/>s under <paramref name="data"/> that match <see cref="Targets"/>.

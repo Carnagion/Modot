@@ -2,6 +2,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching
 {
     /// <summary>
@@ -21,13 +23,21 @@ namespace Godot.Modding.Patching
             this.Index = index;
         }
         
+        [UsedImplicitly]
+        private NodeAddPatch()
+        {
+        }
+        
         /// <summary>
         /// The <see cref="XmlNode"/> to add as a child.
         /// </summary>
+        [Serialize]
         public XmlNode Value
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// The index to insert <see cref="Value"/> at.
@@ -35,7 +45,9 @@ namespace Godot.Modding.Patching
         public int Index
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = -1;
         
         /// <summary>
         /// Adds <see cref="Value"/> as a child to <paramref name="data"/> at the index specified by <see cref="Index"/>.

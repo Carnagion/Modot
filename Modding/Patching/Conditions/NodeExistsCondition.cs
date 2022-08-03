@@ -2,6 +2,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching.Conditions
 {
     /// <summary>
@@ -19,13 +21,21 @@ namespace Godot.Modding.Patching.Conditions
             this.XPath = xPath;
         }
         
+        [UsedImplicitly]
+        private NodeExistsCondition()
+        {
+        }
+        
         /// <summary>
         /// The XPath string to use when checking if an <see cref="XmlNode"/> exists.
         /// </summary>
+        [Serialize]
         public string XPath
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// Checks if any <see cref="XmlNode"/>s match the XPath given by <see cref="XPath"/>.

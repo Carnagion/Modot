@@ -3,6 +3,7 @@ using System.Xml;
 using JetBrains.Annotations;
 
 using Godot.Modding.Patching.Conditions;
+using Godot.Serialization;
 
 namespace Godot.Modding.Patching
 {
@@ -25,13 +26,21 @@ namespace Godot.Modding.Patching
             this.Failure = failure;
         }
         
+        [UsedImplicitly]
+        private ConditionalPatch()
+        {
+        }
+
         /// <summary>
         /// The condition to check when applying the <see cref="ConditionalPatch"/>.
         /// </summary>
+        [Serialize]
         public ICondition Condition
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// The <see cref="IPatch"/> applied if <see cref="Condition"/> succeeds.
@@ -39,6 +48,8 @@ namespace Godot.Modding.Patching
         public IPatch? Success
         {
             get;
+            [UsedImplicitly]
+            private set;
         }
         
         /// <summary>
@@ -47,6 +58,8 @@ namespace Godot.Modding.Patching
         public IPatch? Failure
         {
             get;
+            [UsedImplicitly]
+            private set;
         }
         
         /// <summary>

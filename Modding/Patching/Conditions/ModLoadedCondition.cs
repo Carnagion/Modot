@@ -2,6 +2,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching.Conditions
 {
     /// <summary>
@@ -19,13 +21,21 @@ namespace Godot.Modding.Patching.Conditions
             this.ModId = modId;
         }
         
+        [UsedImplicitly]
+        private ModLoadedCondition()
+        {
+        }
+        
         /// <summary>
         /// The ID of the <see cref="Mod"/> to check for.
         /// </summary>
+        [Serialize]
         public string ModId
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// Checks if any loaded <see cref="Mod"/>'s ID equals <see cref="ModId"/>.

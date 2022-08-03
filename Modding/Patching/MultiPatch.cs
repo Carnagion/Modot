@@ -4,6 +4,8 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization;
+
 namespace Godot.Modding.Patching
 {
     /// <summary>
@@ -21,13 +23,21 @@ namespace Godot.Modding.Patching
             this.Patches = patches;
         }
         
+        [UsedImplicitly]
+        private MultiPatch()
+        {
+        }
+        
         /// <summary>
         /// The patches to apply in sequence.
         /// </summary>
+        [Serialize]
         public IEnumerable<IPatch> Patches
         {
             get;
-        }
+            [UsedImplicitly]
+            private set;
+        } = null!;
         
         /// <summary>
         /// Applies all patches in <see cref="Patches"/> to <paramref name="data"/>.
