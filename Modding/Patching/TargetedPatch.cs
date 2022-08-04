@@ -8,7 +8,7 @@ using Godot.Serialization;
 namespace Godot.Modding.Patching
 {
     /// <summary>
-    /// An <see cref="IPatch"/> that can be used to select descendants of an <see cref="XmlNode"/> according to an XPath string and apply a separate patch on them.
+    /// An <see cref="IPatch"/> that selects descendants of an <see cref="XmlNode"/> according to an XPath string and applies a separate patch on them.
     /// </summary>
     [PublicAPI]
     public class TargetedPatch : IPatch

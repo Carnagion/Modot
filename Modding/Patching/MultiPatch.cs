@@ -9,7 +9,7 @@ using Godot.Serialization;
 namespace Godot.Modding.Patching
 {
     /// <summary>
-    /// An <see cref="IPatch"/> that can be used to apply multiple patches in sequence onto the same <see cref="XmlNode"/>.
+    /// An <see cref="IPatch"/> that applies multiple patches in sequence onto the same <see cref="XmlNode"/>.
     /// </summary>
     [PublicAPI]
     public class MultiPatch : IPatch
