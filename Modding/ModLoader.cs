@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -38,18 +37,24 @@ namespace Godot.Modding
         /// <remarks>This method only loads a <see cref="Mod"/> individually, and does not check whether it has been loaded with all dependencies and in the correct load order. To load multiple <see cref="Mod"/>s in a safe and orderly manner, <see cref="LoadMods"/> should be used.</remarks>
         public static Mod LoadMod(string modDirectoryPath, bool executeAssemblies = true)
         {
+            // Load and immediately register mod to prevent losing its reference in case an exception is thrown
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
             ModLoader.loadedMods.Add(mod.Meta.Id, mod);
+            
+            // Cache mod XML data for repeat enumeration later
             XmlElement[] data = ModLoader.LoadedMods.Values
                 .Select(loadedMod => loadedMod.Data?.DocumentElement)
                 .Append(mod.Data?.DocumentElement)
                 .NotNull()
                 .ToArray();
+            
+            // Execute mod patches and assembly code
             mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
             if (executeAssemblies)
             {
                 ModLoader.StartupMod(mod);
             }
+            
             return mod;
         }
         
@@ -63,17 +68,23 @@ namespace Godot.Modding
         public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths, bool executeAssemblies = true)
         {
             List<Mod> mods = new();
+            
+            // Load and immediately register mods to prevent losing their references in case an exception is thrown
             foreach (Mod.Metadata metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths))))
             {
                 Mod mod = new(metadata);
                 ModLoader.loadedMods.Add(metadata.Id, mod);
                 mods.Add(mod);
             }
+            
+            // Cache XML data of mods for repeat enumeration later
             XmlElement[] data = ModLoader.LoadedMods.Values
                 .Select(mod => mod.Data?.DocumentElement)
                 .Concat(mods.Select(mod => mod.Data?.DocumentElement))
                 .NotNull()
                 .ToArray();
+            
+            // Execute patches and assembly code
             foreach (Mod mod in mods)
             {
                 mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
@@ -82,6 +93,7 @@ namespace Godot.Modding
                     ModLoader.StartupMod(mod);
                 }
             }
+            
             return mods;
         }
         
