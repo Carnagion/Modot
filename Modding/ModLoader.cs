@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -29,6 +30,11 @@ namespace Godot.Modding
         }
         
         /// <summary>
+        /// Invoked after a <see cref="Mod"/> has been completely loaded and its patches and code (if any) have been executed.
+        /// </summary>
+        public static event Action<Mod>? ModLoaded;
+        
+        /// <summary>
         /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/>, applies its patches if any, and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPath">The directory path containing the <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
@@ -54,6 +60,8 @@ namespace Godot.Modding
             {
                 ModLoader.StartupMod(mod);
             }
+            
+            ModLoader.ModLoaded?.Invoke(mod);
             
             return mod;
         }
@@ -92,6 +100,8 @@ namespace Godot.Modding
                 {
                     ModLoader.StartupMod(mod);
                 }
+                
+                ModLoader.ModLoaded?.Invoke(mod);
             }
             
             return mods;
