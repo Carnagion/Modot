@@ -81,12 +81,16 @@ namespace Godot.Modding
             }
             
             XmlDocument data = new();
-            XmlElement root = data.CreateElement(this.Meta.Id.XMLEscape().Replace(' ', '_'));
-            data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), data.DocumentElement);
+            
+            XmlElement root = data.CreateElement("Data");
+            data.AppendChild(root);
+            data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), root);
+            
             documents
                 .SelectMany(document => document.Cast<XmlNode>())
                 .Where(node => node is not XmlDeclaration)
                 .ForEach(node => root.AppendChild(data.ImportNode(node, true)));
+            
             return data;
         }
         
@@ -125,7 +129,7 @@ namespace Godot.Modding
         
         private IEnumerable<IPatch> LoadPatches()
         {
-            string patchesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Data";
+            string patchesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Patches";
             
             if (!System.IO.Directory.Exists(patchesPath))
             {
@@ -137,11 +141,10 @@ namespace Godot.Modding
             foreach (string patchPath in System.IO.Directory.GetFiles(patchesPath, "*.xml", SearchOption.AllDirectories))
             {
                 document.Load(patchPath);
-                if (document.DocumentElement is null)
+                if (document.DocumentElement is not null)
                 {
-                    throw new ModLoadException(this.Meta.Directory, $"No patch present at {patchPath}");
+                    yield return serializer.Deserialize(document.DocumentElement) as IPatch ?? throw new ModLoadException(this.Meta.Directory, $"Invalid patch at {patchPath}");
                 }
-                yield return serializer.Deserialize(document.DocumentElement) as IPatch ?? throw new ModLoadException(this.Meta.Directory, $"Invalid patch at {patchPath}");
             }
         }
         

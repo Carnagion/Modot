@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 
 using JetBrains.Annotations;
 
@@ -28,7 +30,7 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
+        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/>, applies its patches if any, and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPath">The directory path containing the <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
         /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/> gets executed.</param>
@@ -38,6 +40,12 @@ namespace Godot.Modding
         {
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
             ModLoader.loadedMods.Add(mod.Meta.Id, mod);
+            XmlElement[] data = ModLoader.LoadedMods.Values
+                .Select(loadedMod => loadedMod.Data?.DocumentElement)
+                .Append(mod.Data?.DocumentElement)
+                .NotNull()
+                .ToArray();
+            mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
             if (executeAssemblies)
             {
                 ModLoader.StartupMod(mod);
@@ -46,7 +54,7 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
+        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/>, applies their patches if any, runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPaths">The directory paths to load the <see cref="Mod"/>s from, containing each <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
         /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/>s gets executed.</param>
@@ -54,13 +62,25 @@ namespace Godot.Modding
         /// <remarks>This method loads multiple <see cref="Mod"/>s after sorting them according to the load order specified in their metadata. To load a <see cref="Mod"/> individually without regard to its dependencies and load order, <see cref="LoadMod"/> should be used.</remarks>
         public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths, bool executeAssemblies = true)
         {
-            List<Mod> mods = ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths)))
-                .Select(metadata => new Mod(metadata))
-                .ToList();
-            mods.ForEach(mod => ModLoader.loadedMods.Add(mod.Meta.Id, mod));
-            if (executeAssemblies)
+            List<Mod> mods = new();
+            foreach (Mod.Metadata metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths))))
             {
-                mods.ForEach(ModLoader.StartupMod);
+                Mod mod = new(metadata);
+                ModLoader.loadedMods.Add(metadata.Id, mod);
+                mods.Add(mod);
+            }
+            XmlElement[] data = ModLoader.LoadedMods.Values
+                .Select(mod => mod.Data?.DocumentElement)
+                .Concat(mods.Select(mod => mod.Data?.DocumentElement))
+                .NotNull()
+                .ToArray();
+            foreach (Mod mod in mods)
+            {
+                mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
+                if (executeAssemblies)
+                {
+                    ModLoader.StartupMod(mod);
+                }
             }
             return mods;
         }
