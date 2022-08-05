@@ -11,6 +11,7 @@ namespace Godot.Modding.Patching.Conditions
     /// <summary>
     /// An <see cref="ICondition"/> that succeeds if at least one of a specified sequence of conditions succeed.
     /// </summary>
+    [PublicAPI]
     public class OrCondition : ICondition
     {
         /// <summary>
@@ -30,7 +31,6 @@ namespace Godot.Modding.Patching.Conditions
         /// <summary>
         /// The conditions to check.
         /// </summary>
-        [Serialize]
         public IEnumerable<ICondition> Conditions
         {
             get;

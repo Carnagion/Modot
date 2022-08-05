@@ -9,6 +9,7 @@ namespace Godot.Modding.Patching.Conditions
     /// <summary>
     /// An <see cref="ICondition"/> that succeeds if a specified condition fails.
     /// </summary>
+    [PublicAPI]
     public class NotCondition : ICondition
     {
         /// <summary>

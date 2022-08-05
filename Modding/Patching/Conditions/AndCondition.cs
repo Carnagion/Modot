@@ -11,6 +11,7 @@ namespace Godot.Modding.Patching.Conditions
     /// <summary>
     /// An <see cref="ICondition"/> that succeeds if all of a specified sequence of conditions succeed.
     /// </summary>
+    [PublicAPI]
     public class AndCondition : ICondition
     {
         /// <summary>
