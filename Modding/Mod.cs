@@ -48,7 +48,7 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// The XML data of the <see cref="Mod"/>, combined into a single <see cref="XmlNode"/> as its children.
+        /// The XML data of the <see cref="Mod"/> if any, combined into a single <see cref="XmlDocument"/>.
         /// </summary>
         public XmlDocument? Data
         {
