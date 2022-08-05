@@ -6,6 +6,7 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Serialization.Utility;
 using Godot.Utility.Extensions;
 
 namespace Godot.Modding
@@ -16,7 +17,7 @@ namespace Godot.Modding
     [PublicAPI]
     public static class ModLoader
     {
-        private static readonly Dictionary<string, Mod> loadedMods = new();
+        private static readonly OrderedDictionary<string, Mod> loadedMods = new();
         
         /// <summary>
         /// All the <see cref="Mod"/>s that have been loaded at runtime.
@@ -43,24 +44,27 @@ namespace Godot.Modding
         /// <remarks>This method only loads a <see cref="Mod"/> individually, and does not check whether it has been loaded with all dependencies and in the correct load order. To load multiple <see cref="Mod"/>s in a safe and orderly manner, <see cref="LoadMods"/> should be used.</remarks>
         public static Mod LoadMod(string modDirectoryPath, bool executeAssemblies = true)
         {
-            // Load and immediately register mod to prevent losing its reference in case an exception is thrown
+            // Load mod
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
-            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             
-            // Cache mod XML data for repeat enumeration later
+            // Cache XML data of loaded mods for repeat enumeration later
             XmlElement[] data = ModLoader.LoadedMods.Values
                 .Select(loadedMod => loadedMod.Data?.DocumentElement)
                 .Append(mod.Data?.DocumentElement)
                 .NotNull()
                 .ToArray();
             
-            // Execute mod patches and assembly code
+            // Execute mod patches
             mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
+            
+            // Execute mod assemblies
             if (executeAssemblies)
             {
                 ModLoader.StartupMod(mod);
             }
             
+            // Register mod as fully loaded
+            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             ModLoader.ModLoaded?.Invoke(mod);
             
             return mod;
@@ -75,36 +79,41 @@ namespace Godot.Modding
         /// <remarks>This method loads multiple <see cref="Mod"/>s after sorting them according to the load order specified in their metadata. To load a <see cref="Mod"/> individually without regard to its dependencies and load order, <see cref="LoadMod"/> should be used.</remarks>
         public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths, bool executeAssemblies = true)
         {
-            List<Mod> mods = new();
+            int start = ModLoader.loadedMods.Count;
+            int count = 0;
             
-            // Load and immediately register mods to prevent losing their references in case an exception is thrown
-            foreach (Mod.Metadata metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths))))
-            {
-                Mod mod = new(metadata);
-                ModLoader.loadedMods.Add(metadata.Id, mod);
-                mods.Add(mod);
-            }
-            
-            // Cache XML data of mods for repeat enumeration later
-            XmlElement[] data = ModLoader.LoadedMods.Values
+            // Cache XML data of loaded mods for repeat enumeration later
+            List<XmlElement> data = ModLoader.LoadedMods.Values
                 .Select(mod => mod.Data?.DocumentElement)
-                .Concat(mods.Select(mod => mod.Data?.DocumentElement))
                 .NotNull()
-                .ToArray();
+                .ToList();
             
-            // Execute patches and assembly code
-            foreach (Mod mod in mods)
+            foreach (Mod mod in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths))).Select(metadata => new Mod(metadata)))
             {
+                // Add mod's XML data to data cache
+                XmlElement? element = mod.Data?.DocumentElement;
+                if (element is not null)
+                {
+                    data.Add(element);
+                }
+                
+                // Execute mod patches
                 mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
+                
+                // Execute mod assemblies
                 if (executeAssemblies)
                 {
                     ModLoader.StartupMod(mod);
                 }
                 
+                // Register mod as fully loaded
+                ModLoader.loadedMods.Add(mod.Meta.Id, mod);
                 ModLoader.ModLoaded?.Invoke(mod);
+                
+                count += 1;
             }
             
-            return mods;
+            return Enumerable.Range(start, count).Select(index => ModLoader.loadedMods[index]);
         }
         
         private static void StartupMod(Mod mod)
