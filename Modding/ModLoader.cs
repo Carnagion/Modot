@@ -6,7 +6,7 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
-using Godot.Serialization.Utility;
+using Godot.Utility;
 using Godot.Utility.Extensions;
 
 namespace Godot.Modding
