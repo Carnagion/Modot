@@ -58,7 +58,7 @@ namespace Godot.Modding.Patching
             XmlNode value = data.OwnerDocument!.ImportNode(this.Value, true);
             switch (this.Index)
             {
-                case -1:
+                case < 0:
                     data.AppendChild(value);
                     break;
                 case 0:
