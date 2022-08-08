@@ -55,7 +55,7 @@ namespace Godot.Modding.Patching
         /// <param name="data">The <see cref="XmlNode"/> to apply the patch on.</param>
         public void Apply(XmlNode data)
         {
-            XmlNode value = data.OwnerDocument!.ImportNode(data, true);
+            XmlNode value = data.OwnerDocument!.ImportNode(this.Value, true);
             switch (this.Index)
             {
                 case -1:
