@@ -10,18 +10,18 @@ namespace Godot.Modding.Patching
     /// An <see cref="IPatch"/> that logs the state of any <see cref="XmlNode"/>s before and after applying a separate patch to them.
     /// </summary>
     [PublicAPI]
-    public class NodeLogPatch : IPatch
+    public class LogPatch : IPatch
     {
         /// <summary>
-        /// Initialises a new <see cref="NodeLogPatch"/> with the specified parameters.
+        /// Initialises a new <see cref="LogPatch"/> with the specified parameters.
         /// </summary>
         /// <param name="patch">The patch to apply before and after logging the <see cref="XmlNode"/>.</param>
-        public NodeLogPatch(IPatch patch)
+        public LogPatch(IPatch patch)
         { 
             this.Patch = patch;
         }
         
-        private NodeLogPatch()
+        private LogPatch()
         {
         }
         
