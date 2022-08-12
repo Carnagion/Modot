@@ -7,6 +7,7 @@ using System.Xml;
 
 using JetBrains.Annotations;
 
+using Godot.Modding.Patching;
 using Godot.Serialization;
 
 namespace Godot.Modding
@@ -24,9 +25,10 @@ namespace Godot.Modding
         public Mod(Metadata metadata)
         {
             this.Meta = metadata;
-            this.Assemblies = this.LoadAssemblies();
-            this.Data = this.LoadData();
             this.LoadResources();
+            this.Data = this.LoadData();
+            this.Patches = this.LoadPatches();
+            this.Assemblies = this.LoadAssemblies();
         }
         
         /// <summary>
@@ -46,9 +48,17 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// The XML data of the <see cref="Mod"/>, combined into a single <see cref="XmlNode"/> as its children.
+        /// The XML data of the <see cref="Mod"/> if any, combined into a single <see cref="XmlDocument"/>.
         /// </summary>
-        public XmlNode? Data
+        public XmlDocument? Data
+        {
+            get;
+        }
+        
+        /// <summary>
+        /// The patches applied by the <see cref="Mod"/>.
+        /// </summary>
+        public IEnumerable<IPatch> Patches
         {
             get;
         }
@@ -62,7 +72,7 @@ namespace Godot.Modding
                 : Enumerable.Empty<Assembly>();
         }
         
-        private XmlNode? LoadData()
+        private XmlDocument? LoadData()
         {
             IEnumerable<XmlDocument> documents = this.LoadDocuments().ToArray();
             if (!documents.Any())
@@ -71,11 +81,16 @@ namespace Godot.Modding
             }
             
             XmlDocument data = new();
-            data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), data.DocumentElement);
+            
+            XmlElement root = data.CreateElement("Data");
+            data.AppendChild(root);
+            data.InsertBefore(data.CreateXmlDeclaration("1.0", "UTF-8", null), root);
+            
             documents
                 .SelectMany(document => document.Cast<XmlNode>())
-                .Where(node => node.NodeType is not XmlNodeType.XmlDeclaration)
-                .ForEach(node => data.AppendChild(node));
+                .Where(node => node is not XmlDeclaration)
+                .ForEach(node => root.AppendChild(data.ImportNode(node, true)));
+            
             return data;
         }
         
@@ -105,11 +120,30 @@ namespace Godot.Modding
                 return;
             }
             
-            foreach (string resourcePath in System.IO.Directory.GetFiles(resourcesPath, "*.pck", SearchOption.AllDirectories))
+            string? invalidResourcePath = System.IO.Directory.GetFiles(resourcesPath, "*.pck", SearchOption.AllDirectories).FirstOrDefault(resourcePath => !ProjectSettings.LoadResourcePack(resourcePath));
+            if (invalidResourcePath is not null)
             {
-                if (!ProjectSettings.LoadResourcePack(resourcePath))
+                throw new ModLoadException(this.Meta.Directory, $"Error loading resource pack at {invalidResourcePath}");
+            }
+        }
+        
+        private IEnumerable<IPatch> LoadPatches()
+        {
+            string patchesPath = $"{this.Meta.Directory}{System.IO.Path.DirectorySeparatorChar}Patches";
+            
+            if (!System.IO.Directory.Exists(patchesPath))
+            {
+                yield break;
+            }
+            
+            Serializer serializer = new();
+            XmlDocument document = new();
+            foreach (string patchPath in System.IO.Directory.GetFiles(patchesPath, "*.xml", SearchOption.AllDirectories))
+            {
+                document.Load(patchPath);
+                if (document.DocumentElement is not null)
                 {
-                    throw new ModLoadException(this.Meta.Directory, $"Error loading resource pack at {resourcePath}");
+                    yield return serializer.Deserialize(document.DocumentElement) as IPatch ?? throw new ModLoadException(this.Meta.Directory, $"Invalid patch at {patchPath}");
                 }
             }
         }

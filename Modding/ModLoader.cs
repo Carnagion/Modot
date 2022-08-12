@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 
 using JetBrains.Annotations;
 
-using Godot.Modding.Utility.Extensions;
+using Godot.Utility;
+using Godot.Utility.Extensions;
 
 namespace Godot.Modding
 {
@@ -14,7 +16,7 @@ namespace Godot.Modding
     [PublicAPI]
     public static class ModLoader
     {
-        private static readonly Dictionary<string, Mod> loadedMods = new();
+        private static readonly OrderedDictionary<string, Mod> loadedMods = new();
         
         /// <summary>
         /// All the <see cref="Mod"/>s that have been loaded at runtime.
@@ -28,7 +30,7 @@ namespace Godot.Modding
         }
         
         /// <summary>
-        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
+        /// Loads a <see cref="Mod"/> from <paramref name="modDirectoryPath"/>, applies its patches if any, and runs all methods marked with <see cref="ModStartupAttribute"/> in its assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPath">The directory path containing the <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
         /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/> gets executed.</param>
@@ -36,17 +38,33 @@ namespace Godot.Modding
         /// <remarks>This method only loads a <see cref="Mod"/> individually, and does not check whether it has been loaded with all dependencies and in the correct load order. To load multiple <see cref="Mod"/>s in a safe and orderly manner, <see cref="LoadMods"/> should be used.</remarks>
         public static Mod LoadMod(string modDirectoryPath, bool executeAssemblies = true)
         {
+            // Load mod
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
-            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
+            
+            // Cache XML data of loaded mods for repeat enumeration later
+            XmlElement[] data = ModLoader.LoadedMods.Values
+                .Select(loadedMod => loadedMod.Data?.DocumentElement)
+                .Append(mod.Data?.DocumentElement)
+                .NotNull()
+                .ToArray();
+            
+            // Apply mod patches
+            mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
+            
+            // Execute mod assemblies
             if (executeAssemblies)
             {
                 ModLoader.StartupMod(mod);
             }
+            
+            // Register mod as fully loaded
+            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
+            
             return mod;
         }
         
         /// <summary>
-        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/> and runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
+        /// Loads <see cref="Mod"/>s from <paramref name="modDirectoryPaths"/>, applies their patches if any, runs all methods marked with <see cref="ModStartupAttribute"/> in their assemblies if specified.
         /// </summary>
         /// <param name="modDirectoryPaths">The directory paths to load the <see cref="Mod"/>s from, containing each <see cref="Mod"/>'s metadata, assemblies, data, and resource packs.</param>
         /// <param name="executeAssemblies">Whether any code in any assemblies of the loaded <see cref="Mod"/>s gets executed.</param>
@@ -54,17 +72,41 @@ namespace Godot.Modding
         /// <remarks>This method loads multiple <see cref="Mod"/>s after sorting them according to the load order specified in their metadata. To load a <see cref="Mod"/> individually without regard to its dependencies and load order, <see cref="LoadMod"/> should be used.</remarks>
         public static IEnumerable<Mod> LoadMods(IEnumerable<string> modDirectoryPaths, bool executeAssemblies = true)
         {
-            List<Mod> mods = ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths)))
-                .Select(metadata => new Mod(metadata))
+            // Cache XML data of loaded mods for repeat enumeration later
+            List<XmlElement> data = ModLoader.LoadedMods.Values
+                .Select(mod => mod.Data?.DocumentElement)
+                .NotNull()
                 .ToList();
-            mods.ForEach(mod => ModLoader.loadedMods.Add(mod.Meta.Id, mod));
-            if (executeAssemblies)
+            
+            List<Mod> mods = new();
+            foreach (Mod.Metadata metadata in ModLoader.SortModMetadata(ModLoader.FilterModMetadata(ModLoader.LoadModMetadata(modDirectoryPaths))))
             {
-                mods.ForEach(ModLoader.StartupMod);
+                // Load mod
+                Mod mod = new(metadata);
+                mods.Add(mod);
+                
+                // Apply mod patches
+                XmlElement? root = mod.Data?.DocumentElement;
+                if (root is not null)
+                {
+                    data.Add(root);
+                }
+                mod.Patches.ForEach(patch => data.ForEach(patch.Apply));
+            }
+            foreach (Mod mod in mods)
+            {
+                // Execute mod assemblies
+                if (executeAssemblies)
+                {
+                    ModLoader.StartupMod(mod);
+                }
+                
+                // Register mod as fully loaded
+                ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             }
             return mods;
         }
-
+        
         private static void StartupMod(Mod mod)
         {
             // Invoke all static methods annotated with [Startup] along with the supplied parameters (if any)

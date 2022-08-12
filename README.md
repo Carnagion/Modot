@@ -8,6 +8,7 @@ Its API is aimed at allowing creators to easily modularise their Godot applicati
 
 - Load mods with C# assemblies, XML data, and resource packs at runtime
 - Sort mods using load orders defined partially by each mod to prevent conflicts
+- Patch XML data of other loaded mods without executing code
 - Optionally execute code from mod assemblies upon loading
 - Load mods individually, bypassing load order restrictions
 
@@ -19,7 +20,7 @@ A more detailed explanation of all features along with instructions on usage is 
 Simply include the following lines in a Godot project's `.csproj` file (either by editing the file manually or letting an IDE install the package):
 ```xml
 <ItemGroup>
-    <PackageReference Include="Modot" Version="1.0.2"/>
+    <PackageReference Include="Modot" Version="2.0.0"/>
 </ItemGroup>
  ```
 
@@ -42,4 +43,4 @@ As such, it is important to note that **Modot does not bear the responsibility o
 However, it does provide the option to ignore a mod's assemblies, preventing any code from being executed.  
 Along with the ability to load mods individually, this can be used to ensure that only trusted mods can execute their code.
 
-Another way to prevent executing malicious code is by restricting the source of mods to websites that thoroughly scan and verify uploaded user content, such as [Steam](https://store.steampowered.com). As mentioned earlier though, **it is not Modot's responsibility to implement such checks**.
+Another way to prevent executing malicious code is by restricting the source of mods to websites that thoroughly scan and verify uploaded user content. As mentioned earlier though, **it is not Modot's responsibility to implement such checks**.
