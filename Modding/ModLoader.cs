@@ -40,6 +40,7 @@ namespace Godot.Modding
         {
             // Load mod
             Mod mod = new(Mod.Metadata.Load(modDirectoryPath));
+            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             
             // Cache XML data of loaded mods for repeat enumeration later
             XmlElement[] data = ModLoader.LoadedMods.Values
@@ -56,9 +57,6 @@ namespace Godot.Modding
             {
                 ModLoader.StartupMod(mod);
             }
-            
-            // Register mod as fully loaded
-            ModLoader.loadedMods.Add(mod.Meta.Id, mod);
             
             return mod;
         }
