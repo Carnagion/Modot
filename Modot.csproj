@@ -8,7 +8,7 @@
         <!-- Workaround as Godot does not know how to properly load NuGet packages -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>2.0.0</PackageVersion>
+        <PackageVersion>2.0.1</PackageVersion>
         <Title>Modot</Title>
         <Authors>Carnagion</Authors>
         <Description>A mod loader and API for applications made using Godot, with the ability to load C# assemblies, XML data, and resource packs at runtime.</Description>
