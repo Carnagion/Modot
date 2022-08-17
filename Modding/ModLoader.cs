@@ -112,7 +112,7 @@ namespace Godot.Modding
             // Invoke all static methods annotated with [Startup] along with the supplied parameters (if any)
             mod.Assemblies
                 .SelectMany(assembly => assembly.GetTypes())
-                .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public))
+                .SelectMany(type => type.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
                 .Select(method => (method, method.GetCustomAttribute<ModStartupAttribute>()))
                 .Where(pair => pair.Item2 is not null)
                 .ForEach(pair => pair.Item1.Invoke(null, pair.Item2.Parameters));
