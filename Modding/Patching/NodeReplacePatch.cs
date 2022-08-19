@@ -45,14 +45,15 @@ namespace Godot.Modding.Patching
         {
             XmlNode? previous = data.PreviousSibling;
             XmlNode parent = data.ParentNode!;
+            XmlNode replacement = data.OwnerDocument!.ImportNode(this.Replacement, true);
             parent.RemoveChild(data);
             if (previous is null)
             {
-                parent.PrependChild(this.Replacement);
+                parent.PrependChild(replacement);
             }
             else
             {
-                parent.InsertAfter(this.Replacement, previous);
+                parent.InsertAfter(replacement, previous);
             }
         }
     }
