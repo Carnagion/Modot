@@ -1,0 +1,10 @@
+<Patch Type="Godot.Modding.Patching.LogPatch">
+    <Patch Type="Godot.Modding.Patching.TargetedPatch">
+        <Targets>/Data/Test[@Add="True"]</Targets>
+        <Patch Type="Godot.Modding.Patching.NodeAddPatch">
+            <Value>
+                <Added>This has been added</Added>
+            </Value>s
+        </Patch>
+    </Patch>
+</Patch>
