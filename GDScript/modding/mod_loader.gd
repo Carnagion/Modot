@@ -15,6 +15,12 @@ func load_mod(mod_directory_path):
 	self._loaded_mods[mod.meta.id] = mod
 	return mod
 
+func load_mods(mod_directory_paths):
+	var mods = self._sort_mod_metadata(self._filter_mod_metadata(self._load_mod_metadata(mod_directory_paths))).map(func(metadata): return Mod.new(metadata))
+	for mod in mods:
+		self._loaded_mods[mod.meta.id] = mod
+	return mods
+
 func _load_mod_metadata(mod_directory_paths):
 	var loaded_metadata = {}
 	for metadata in mod_directory_paths.map(func(mod_directory_path): return Mod.Metadata._load(mod_directory_path)).filter(func(metadata): return metadata != null):
