@@ -7,19 +7,31 @@ var loaded_mods:
 	get:
 		return self._loaded_mods
 
-func load_mod(mod_directory_path):
+func load_mod(mod_directory_path, execute_scripts = true):
 	var metadata = Mod.Metadata._load(mod_directory_path)
 	if not metadata:
 		return null
 	var mod = Mod.new(metadata)
 	self._loaded_mods[mod.meta.id] = mod
+	if execute_scripts:
+		self._startup_mod(mod)
 	return mod
 
-func load_mods(mod_directory_paths):
-	var mods = self._sort_mod_metadata(self._filter_mod_metadata(self._load_mod_metadata(mod_directory_paths))).map(func(metadata): return Mod.new(metadata))
-	for mod in mods:
-		self._loaded_mods[mod.meta.id] = mod
+func load_mods(mod_directory_paths, execute_scripts = true):
+	var mods = []
+	for metadata in self._sort_mod_metadata(self._filter_mod_metadata(self._load_mod_metadata(mod_directory_paths))):
+		var mod = Mod.new(metadata)
+		mods.append(mod)
+		self._loaded_mods[metadata.id] = mod
+	if execute_scripts:
+		for mod in mods:
+			self._startup_mod(mod)
 	return mods
+
+func _startup_mod(mod):
+	for script in mod.scripts:
+		script.reload()
+		script.new()
 
 func _load_mod_metadata(mod_directory_paths):
 	var loaded_metadata = {}

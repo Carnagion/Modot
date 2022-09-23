@@ -5,10 +5,13 @@ func _init(metadata):
 	self._meta = metadata
 	self._load_resources()
 	self._load_data()
+	self._load_scripts()
 
 var _meta
 
 var _data = {}
+
+var _scripts = []
 
 var meta:
 	get:
@@ -17,6 +20,10 @@ var meta:
 var data:
 	get:
 		return self._data
+
+var scripts:
+	get:
+		return self._scripts
 
 func _load_resources():
 	var resources_path = self.meta.directory.path_join("resources")
@@ -42,6 +49,21 @@ func _load_data():
 			Errors.mod_load_error(self.meta.directory, "Could not parse JSON at %s" % json_path)
 			continue
 		self._data[json_path] = json
+
+func _load_scripts():
+	var scripts_path = self.meta.directory.path_join("scripts")
+	var directory = Directory.new()
+	if not directory.dir_exists(scripts_path):
+		return
+	directory.open(scripts_path)
+	var file = File.new()
+	for script_path in DirectoryExtensions.get_files_recursive_ending(directory, ["gd"]):
+		file.open(script_path, File.READ)
+		var code = file.get_as_text()
+		file.close()
+		var script = GDScript.new()
+		script.source_code = code
+		self._scripts.append(script)
 
 class Metadata extends RefCounted:
 	
