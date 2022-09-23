@@ -21,6 +21,8 @@ var data:
 func _load_resources():
 	var resources_path = self.meta.directory.path_join("resources")
 	var directory = Directory.new()
+	if not directory.dir_exists(resources_path):
+		return
 	directory.open(resources_path)
 	for unloaded_resource in DirectoryExtensions.get_files_recursive_ending(directory, ["pck"]).filter(func(resource_path): return not ProjectSettings.load_resource_pack(resource_path)):
 		Errors.mod_load_error(self.meta.directory, "Could not load resource pack at %s" % unloaded_resource)
@@ -28,6 +30,8 @@ func _load_resources():
 func _load_data():
 	var data_path = self.meta.directory.path_join("data")
 	var directory = Directory.new()
+	if not directory.dir_exists(data_path):
+		return
 	directory.open(data_path)
 	var file = File.new()
 	for json_path in DirectoryExtensions.get_files_recursive_ending(directory, ["json"]):
@@ -90,8 +94,6 @@ class Metadata extends RefCounted:
 			return self._incompatible
 	
 	static func _load(directory_path):
-		var meta = Mod.Metadata.new()
-		meta._directory = directory_path
 		# Locate metadata file
 		var metadata_file_path = directory_path.path_join("mod.json")
 		var file = File.new()
@@ -105,6 +107,8 @@ class Metadata extends RefCounted:
 		if not json is Dictionary:
 			Errors.mod_load_error(directory_path, "Mod metadata is invalid")
 			return null
+		var meta = Mod.Metadata.new()
+		meta._directory = directory_path
 		return meta if meta._try_deserialize(json) and meta._is_valid() else null
 		
 	
