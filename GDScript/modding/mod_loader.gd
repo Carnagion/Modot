@@ -37,7 +37,7 @@ func _load_mod_metadata(mod_directory_paths):
 	var loaded_metadata = {}
 	for metadata in mod_directory_paths.map(func(mod_directory_path): return Mod.Metadata._load(mod_directory_path)).filter(func(metadata): return metadata != null):
 		# Fail if the metadata is incompatible with any of the loaded metadata (and vice-versa), or if the ID already exists
-		var incompatible_metadata = metadata.incompatible.map(func(id): return loaded_metadata[id].filter(func(loaded): return loaded != null)) + loaded_metadata.values().filter(func(loaded): return metadata in loaded.incompatible)
+		var incompatible_metadata = metadata.incompatible.map(func(id): return loaded_metadata[id]).filter(func(loaded): return loaded != null) + loaded_metadata.values().filter(func(loaded): return metadata in loaded.incompatible)
 		if not incompatible_metadata.is_empty():
 			Errors.mod_load_error(metadata.directory, "Mod is incompatible with other loaded mods")
 			continue
