@@ -65,6 +65,9 @@ func _load_scripts():
 		script.source_code = code
 		self._scripts.append(script)
 
+func _to_string():
+	return "{ meta: %s, data: %s, scripts: %s }" % [self.meta, self.data, self.scripts]
+
 class Metadata extends RefCounted:
 	
 	var _directory
@@ -186,3 +189,6 @@ class Metadata extends RefCounted:
 			return true
 		Errors.mod_load_error(self.directory, "Mod metadata contains invalid load order or invalid dependencies")
 		return false
+	
+	func _to_string():
+		return "{ directory: %s, id: %s, name: %s, author: %s, dependencies: %s, before: %s, after: %s, incompatible: %s }" % [self.directory, self.id, self.name, self.author, self.dependencies, self.before, self.after, self.incompatible]
