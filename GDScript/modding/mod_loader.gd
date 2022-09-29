@@ -1,4 +1,3 @@
-class_name ModLoader
 extends Node
 
 var _loaded_mods = {}

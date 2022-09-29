@@ -52,18 +52,21 @@ func _load_data():
 
 func _load_scripts():
 	var scripts_path = self.meta.directory.path_join("scripts")
+	self._scripts.append_array(self._load_code(scripts_path))
+
+func _load_code(directory_path):
 	var directory = Directory.new()
-	if not directory.dir_exists(scripts_path):
-		return
-	directory.open(scripts_path)
+	if not directory.dir_exists(directory_path):
+		return []
+	directory.open(directory_path)
 	var file = File.new()
-	for script_path in DirectoryExtensions.get_files_recursive_ending(directory, ["gd"]):
-		file.open(script_path, File.READ)
-		var code = file.get_as_text()
-		file.close()
-		var script = GDScript.new()
-		script.source_code = code
-		self._scripts.append(script)
+	return DirectoryExtensions.get_files_recursive_ending(directory, ["gd"]).map(func(file_path):
+			file.open(file_path, File.READ)
+			var code = file.get_as_text()
+			file.close()
+			var script = GDScript.new()
+			script.source_code = code
+			return script)
 
 func _to_string():
 	return "{ meta: %s, data: %s, scripts: %s }" % [self.meta, self.data, self.scripts]
