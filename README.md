@@ -17,7 +17,7 @@ A more detailed explanation of all features, instructions on usage, and **Modot*
 # Installation
 
 - ## C#
-**Modot** is available as a [NuGet package](https://www.nuget.org/packages/Modot). 
+  **Modot** is available as a [NuGet package](https://www.nuget.org/packages/Modot). 
   Simply include the following lines in a Godot project's `.csproj` file (either by editing the file manually or letting an IDE install the package):
   ```xml
   <ItemGroup>
