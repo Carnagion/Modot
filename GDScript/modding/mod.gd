@@ -1,3 +1,4 @@
+## Represents a modular component loaded at runtime, with its own scripts, resource packs, and data.
 class_name Mod
 extends RefCounted
 
@@ -13,14 +14,17 @@ var _data = {}
 
 var _scripts = []
 
+## The metadata of the [Mod], such as its ID, name, load order, etc.
 var meta:
 	get:
 		return self._meta
 
+## The JSON data of the [Mod], combined into a single JSON dictionary with the file names as keys and their parsed contents as values.
 var data:
 	get:
 		return self._data
 
+## The scripts of the [Mod].
 var scripts:
 	get:
 		return self._scripts
@@ -32,7 +36,7 @@ func _load_resources():
 		return
 	directory.open(resources_path)
 	for unloaded_resource in DirectoryExtensions.get_files_recursive_ending(directory, ["pck"]).filter(func(resource_path): return not ProjectSettings.load_resource_pack(resource_path)):
-		Errors.mod_load_error(self.meta.directory, "Could not load resource pack at %s" % unloaded_resource)
+		Errors._mod_load_error(self.meta.directory, "Could not load resource pack at %s" % unloaded_resource)
 
 func _load_data():
 	var data_path = self.meta.directory.path_join("data")
@@ -46,7 +50,7 @@ func _load_data():
 		var json = JSON.parse_string(file.get_as_text())
 		file.close()
 		if json == null:
-			Errors.mod_load_error(self.meta.directory, "Could not parse JSON at %s" % json_path)
+			Errors._mod_load_error(self.meta.directory, "Could not parse JSON at %s" % json_path)
 			continue
 		self._data[json_path] = json
 
@@ -71,6 +75,7 @@ func _load_code(directory_path):
 func _to_string():
 	return "{ meta: %s, data: %s, scripts: %s }" % [self.meta, self.data, self.scripts]
 
+## Represents the metadata of a [Mod], such as its unique ID, name, author, load order, etc.
 class Metadata extends RefCounted:
 	
 	var _directory
@@ -89,34 +94,42 @@ class Metadata extends RefCounted:
 	
 	var _incompatible
 	
+	## The directory where the [Metadata] was loaded from.
 	var directory:
 		get:
 			return self._directory
 	
+	## The unique ID of the [Mod].
 	var id:
 		get:
 			return self._id
 	
+	## THe name of the [Mod].
 	var name:
 		get:
 			return self._name
 	
+	## The individual or group that created the [Mod].
 	var author:
 		get:
 			return self._author
 	
+	## The unique IDs of all other [Mod]s that the [Mod] depends on.
 	var dependencies:
 		get:
 			return self._dependencies
 	
+	## The unique IDs of all other [Mod]s that should be loaded before the [Mod].
 	var before:
 		get:
 			return self._before
 	
+	## The unique IDs of all other [Mod]s that should be loaded after the [Mod].
 	var after:
 		get:
 			return self._after
 	
+	## The unique IDs of all other [Mod]s that are incompatible with the [Mod].
 	var incompatible:
 		get:
 			return self._incompatible
@@ -126,19 +139,18 @@ class Metadata extends RefCounted:
 		var metadata_file_path = directory_path.path_join("mod.json")
 		var file = File.new()
 		if not file.file_exists(metadata_file_path):
-			Errors.mod_load_error(directory_path, "Mod metadata file does not exist")
+			Errors._mod_load_error(directory_path, "Mod metadata file does not exist")
 			return null
 		# Retrieve metadata file contents
 		file.open(metadata_file_path, File.READ)
 		var json = JSON.parse_string(file.get_as_text())
 		file.close()
 		if not json is Dictionary:
-			Errors.mod_load_error(directory_path, "Mod metadata is invalid")
+			Errors._mod_load_error(directory_path, "Mod metadata is invalid")
 			return null
 		var meta = Mod.Metadata.new()
 		meta._directory = directory_path
 		return meta if meta._try_deserialize(json) and meta._is_valid() else null
-		
 	
 	func _try_deserialize(json):
 		# Retrieve compulsory metadata
@@ -146,7 +158,7 @@ class Metadata extends RefCounted:
 		var name = json.get("name")
 		var author = json.get("author")
 		if not (id is String and name is String and author is String):
-			Errors.mod_load_error(self.directory, "Mod metadata contains invalid ID, name, or author")
+			Errors._mod_load_error(self.directory, "Mod metadata contains invalid ID, name, or author")
 			return false
 		self._id = id
 		self._name = name
@@ -156,25 +168,25 @@ class Metadata extends RefCounted:
 		if dependencies is Array:
 			self._dependencies = dependencies
 		else:
-			Errors.mod_load_error(self.directory, "Mod metadata contains invalid dependencies")
+			Errors._mod_load_error(self.directory, "Mod metadata contains invalid dependencies")
 			return false
 		var before = json.get("before", [])
 		if before is Array:
 			self._before = before
 		else:
-			Errors.mod_load_error(self.directory, "Mod metadata contains invalid load before list")
+			Errors._mod_load_error(self.directory, "Mod metadata contains invalid load before list")
 			return false
 		var after = json.get("after", [])
 		if after is Array:
 			self._after = after
 		else:
-			Errors.mod_load_error(self.directory, "Mod metadata contains invalid load after list")
+			Errors._mod_load_error(self.directory, "Mod metadata contains invalid load after list")
 			return false
 		var incompatible = json.get("incompatible", [])
 		if incompatible is Array:
 			self._incompatible = incompatible
 		else:
-			Errors.mod_load_error(self.directory, "Mod metadata contains invalid incompatibilities")
+			Errors._mod_load_error(self.directory, "Mod metadata contains invalid incompatibilities")
 			return false
 		return true
 	
@@ -190,7 +202,7 @@ class Metadata extends RefCounted:
 		var valid_dependencies = self.dependencies.filter(func(id): return id in incompatible).is_empty()
 		if valid_load_order and valid_dependencies:
 			return true
-		Errors.mod_load_error(self.directory, "Mod metadata contains invalid load order or invalid dependencies")
+		Errors._mod_load_error(self.directory, "Mod metadata contains invalid load order or invalid dependencies")
 		return false
 	
 	func _to_string():

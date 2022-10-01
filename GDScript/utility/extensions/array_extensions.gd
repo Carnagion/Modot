@@ -1,5 +1,6 @@
 class_name ArrayExtensions
 
+## Topologically sorts [code]array[/code] using [code]dependencies[/code] for each element's dependencies, and invoking [code]cyclic[/code] if a cyclic dependency is found.
 static func topological_sort(array, dependencies, cyclic):
 	var sorted = []
 	var states = {}
