@@ -3,8 +3,8 @@ obj/
 *.sln
 *.Dotsettings.user
 
-**/*.godot
-**/.mono/
-**/.import/
+*.godot
+.mono/
+.import/
 
-**/.idea/
+.idea/
