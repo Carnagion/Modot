@@ -22,7 +22,7 @@ A more detailed explanation of all features, instructions on usage, and **Modot*
 Simply include the following lines in a Godot project's `.csproj` file (either by editing the file manually or letting an IDE install the package):
 ```xml
 <ItemGroup>
-    <PackageReference Include="Modot" Version="2.0.2"/>
+    <PackageReference Include="Modot" Version="3.0.0"/>
 </ItemGroup>
  ```
 
