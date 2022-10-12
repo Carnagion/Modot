@@ -12,7 +12,7 @@ Its API is aimed at allowing creators to easily modularise their Godot applicati
 - Optionally execute mod code upon loading
 - Load mods individually, bypassing load order restrictions
 
-A more detailed explanation of all features, instructions on usage, and **Modot**'s C# and GDScript API differences are available on the [wiki](https://github.com/Carnagion/Modot/wiki).
+A more detailed explanation of all features, instructions on usage, and **Modot**'s C# and GDScript API differences can be found on the [wiki](https://github.com/Carnagion/Modot/wiki).
 
 # Installation
 
