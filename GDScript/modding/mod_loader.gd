@@ -35,6 +35,8 @@ func _startup_mod(mod):
 	for script in mod.scripts:
 		script.reload()
 		script.new()
+		if not (script is RefCounted):
+			script.free()
 
 func _load_mod_metadata(mod_directory_paths):
 	var loaded_metadata = {}
