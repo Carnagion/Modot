@@ -16,12 +16,14 @@ A more detailed explanation of all features, instructions on usage, and **Modot*
 
 # Installation
 
-- ## C#
-  **Modot** is available as a [NuGet package](https://www.nuget.org/packages/Modot). 
+- **C#**
+
+  **Modot** is available as a [NuGet package](https://www.nuget.org/packages/Modot).
+
   Simply include the following lines in a Godot project's `.csproj` file (either by editing the file manually or letting an IDE install the package):
   ```xml
   <ItemGroup>
-      <PackageReference Include="Modot" Version="3.0.0"/>
+      <PackageReference Include="Modot" Version="2.0.3"/>
   </ItemGroup>
    ```
   Due to [a bug](https://github.com/godotengine/godot/issues/42271) in Godot, the following lines will also need to be included in the `.csproj` file to properly compile along with NuGet packages:
@@ -31,8 +33,10 @@ A more detailed explanation of all features, instructions on usage, and **Modot*
   </PropertyGroup>
   ```
 
-- ## GDScript
+- **GDScript**
+
   Currently, GDScript lacks a proper package management system, making it difficult to distribute **Modot** via a package manager.
+  
   As such, the easiest way to install **Modot** for GDScript is to simply copy all files and directories under the `GDScript` directory and add them to the desired Godot project.
 
 # Tutorial
