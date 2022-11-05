@@ -2,6 +2,7 @@
 class_name Mod
 extends RefCounted
 
+## Initializes a new [Mod] using the [code]metadata[/code].
 func _init(metadata):
 	self._meta = metadata
 	self._load_resources()
