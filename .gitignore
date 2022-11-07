@@ -1,6 +1,10 @@
 bin/
 obj/
 *.sln
+*.Dotsettings.user
+
+*.godot
 .mono/
 .import/
+
 .idea/
