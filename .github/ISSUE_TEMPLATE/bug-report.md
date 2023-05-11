@@ -1,5 +1,5 @@
 ---
-name: Bug Report
+name: Bug report
 about: Report a bug in Modot
 title: ''
 labels: bug
