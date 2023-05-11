@@ -1,10 +1,13 @@
+# C#
 bin/
 obj/
 *.sln
 *.Dotsettings.user
 
+# Godot
 *.godot
 .mono/
 .import/
 
+# JetBrains
 .idea/
