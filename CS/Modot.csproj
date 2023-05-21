@@ -1,14 +1,12 @@
-<Project Sdk="Godot.NET.Sdk/3.3.0">
+<Project Sdk="Godot.NET.Sdk/4.0.2">
     <PropertyGroup>
         <LangVersion>default</LangVersion>
         <Nullable>enable</Nullable>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>Godot</RootNamespace>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <!-- Workaround as Godot does not know how to properly load NuGet packages -->
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>2.0.3</PackageVersion>
+        <PackageVersion>3.0.0</PackageVersion>
         <Title>Modot</Title>
         <Authors>Carnagion</Authors>
         <Description>A mod loader and API for applications made using Godot, with the ability to load C# assemblies, XML data, and resource packs at runtime.</Description>
@@ -16,16 +14,16 @@
         <PackageLicenseUrl>../LICENSE</PackageLicenseUrl>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="GDLogger" Version="1.0.1"/>
-        <PackageReference Include="GDSerializer" Version="2.0.3"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0"/>
+        <PackageReference Include="GDLogger" Version="2.0.0" />
+        <PackageReference Include="GDSerializer" Version="3.0.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="../.gitignore"/>
-        <Content Include="../LICENSE"/>
-        <Content Include="../README.md"/>
+        <Content Include="../.gitignore" />
+        <Content Include="../LICENSE" />
+        <Content Include="../README.md" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="../LICENSE" Pack="true" PackagePath=""/>
+        <None Include="../LICENSE" Pack="true" PackagePath="" />
     </ItemGroup>
 </Project>
